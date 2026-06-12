@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+
+        <section th:replace="~{categoria/fragmentos :: agregar}"/>
+        <section th:replace="~{categoria/fragmentos :: listado}"/>
+        <section th:replace="~{categoria/fragmentos :: confirmarEliminar}"/>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+
+        <script>
+            var confirmModal = document.getElementById('confirmModal');
+            if (confirmModal) {
+                confirmModal.addEventListener('show.bs.modal', function (e) {
+                    var btn = e.relatedTarget;
+                    document.getElementById('modalId').value = btn.getAttribute('data-bs-id');
+                    document.getElementById('modalDescripcion').textContent = btn.getAttribute('data-bs-descripcion');
+                });
+            }
+        </script>
+    </body>
+</html>
