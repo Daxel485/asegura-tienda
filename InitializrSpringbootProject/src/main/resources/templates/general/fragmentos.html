@@ -16,6 +16,7 @@
         <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
         <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
+        <script th:src="@{/js/scripts.js}"></script>
     </head>
 
     <body>
@@ -85,6 +86,30 @@
         <footer th:fragment="footer" class="p-2 mt-5 bg-info text-white">
             <p class="lead text-center">[[#{plantilla.derechos}]] &copy;</p>
         </footer>
+
+        <!-- Fragmento #4 Toast para mostrar mensajes de éxito o error -->
+        <div th:fragment="mostrarToast">
+            <div th:if="${todoOk != null}"
+                 class="toast show position-fixed bottom-0 end-0 m-3 border-0"
+                 role="alert" style="z-index:9999; background-color:#198754; color:#fff;">
+                <div class="toast-header text-white" style="background-color:#146c43;">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong class="me-auto">TechShop</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">[[${todoOk}]]</div>
+            </div>
+            <div th:if="${error != null}"
+                 class="toast show position-fixed bottom-0 end-0 m-3 border-0"
+                 role="alert" style="z-index:9999; background-color:#dc3545; color:#fff;">
+                <div class="toast-header text-white" style="background-color:#b02a37;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong class="me-auto">TechShop</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">[[${error}]]</div>
+            </div>
+        </div>
 
     </body>
 </html>

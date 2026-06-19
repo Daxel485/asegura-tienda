@@ -2,17 +2,23 @@ package com.example.demo.servicio;
 
 import com.example.demo.dominio.Categoria;
 import com.example.demo.repositorio.CategoriaRepository;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final FirebaseStorageService firebaseStorageService;
 
-    public CategoriaService(CategoriaRepository categoriaRepository) {
+    public CategoriaService(CategoriaRepository categoriaRepository, FirebaseStorageService firebaseStorageService) {
         this.categoriaRepository = categoriaRepository;
+        this.firebaseStorageService = firebaseStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -21,5 +27,37 @@ public class CategoriaService {
             return categoriaRepository.findByActivoTrue();
         }
         return categoriaRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Categoria> getCategoria(Integer idCategoria) {
+        return categoriaRepository.findById(idCategoria);
+    }
+
+    @Transactional
+    public void save(Categoria categoria, MultipartFile imagenFile) {
+        categoria = categoriaRepository.save(categoria);
+        if (!imagenFile.isEmpty()) {
+            try {
+                String rutaImagen = firebaseStorageService.uploadImage(
+                        imagenFile, "categoria",
+                        categoria.getIdCategoria());
+                categoria.setRutaImagen(rutaImagen);
+                categoriaRepository.save(categoria);
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    @Transactional
+    public void delete(Integer idCategoria) {
+        if (!categoriaRepository.existsById(idCategoria)) {
+            throw new IllegalArgumentException("La categoría con ID " + idCategoria + " no existe.");
+        }
+        try {
+            categoriaRepository.deleteById(idCategoria);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("No se puede eliminar la categoria. Tiene datos asociados.", e);
+        }
     }
 }
