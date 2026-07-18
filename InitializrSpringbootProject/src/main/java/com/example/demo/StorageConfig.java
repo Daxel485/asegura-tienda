@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.NoCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.File;
@@ -23,6 +24,16 @@ public class StorageConfig {
     @Bean
     public Storage storage() throws IOException {
         ClassPathResource resource = new ClassPathResource(jsonPath + File.separator + jsonFile);
+        if (!resource.exists()) {
+            // Modo desarrollo local sin credenciales de Firebase: la app arranca
+            // igual, pero la subida de imágenes no estará disponible hasta colocar
+            // el archivo techshop-firebase.json en src/main/resources/firebase/.
+            return StorageOptions.newBuilder()
+                    .setProjectId("local-dev")
+                    .setCredentials(NoCredentials.getInstance())
+                    .build()
+                    .getService();
+        }
         try (InputStream inputStream = resource.getInputStream()) {
             GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
             return StorageOptions.newBuilder().setCredentials(credentials).build().getService();
